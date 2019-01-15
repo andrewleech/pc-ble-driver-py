@@ -1,7 +1,5 @@
 image: Visual Studio 2017
 
-platform: x64
-
 # No need to run CI on the branch if we're also running CI for a PR.
 skip_branch_with_pr: true
 
@@ -35,6 +33,12 @@ environment:
     - PYTHON: "C:\\Python37-x64"
       CMAKE_GENERATOR: "Visual Studio 14 2015 Win64"
 
+init:
+  # Note: We want to force the python version used so we must add the 
+  # correct version earlier on the PATH so that CMake finds it when
+  # configuring.
+  - SET PATH=%PYTHON%;%PATH%
+  
 cache:
   ## Cache swig which we install via choco.
   # The syntax here is <dir-to-cache> -> <invalidated-when-this-file-changes>
@@ -65,15 +69,17 @@ build_script:
   # Again, you only need build.cmd if you're building C extensions for
   # 64-bit Python 3.3/3.4. And you need to use %PYTHON% to get the correct
   # interpreter
-  #- "build.cmd %PYTHON%\\python.exe setup.py bdist_wheel"
-  
-  - cd build
+
+- cd build
   - vcpkg install asio
   - vcpkg install catch2
   - cmake -G"%CMAKE_GENERATOR%" -DBOOST_LIBRARYDIR=C:\Libraries\boost_1_67_0\lib -DCMAKE_TOOLCHAIN_FILE=C:\Tools\vcpkg\scripts\buildsystems\vcpkg.cmake ..
   - msbuild ALL_BUILD.vcxproj /p:Configuration=Release
   - dir
   - dir ..\python\pc_ble_driver_py
+  
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - "build.cmd %PYTHON%\\python.exe setup.py bdist_wheel"
 
 artifacts:
   # bdist_wheel puts your built wheel in the dist directory
