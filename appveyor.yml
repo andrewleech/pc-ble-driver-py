@@ -1,5 +1,3 @@
-shallow_clone: true
-
 image: Visual Studio 2017
 
 platform: x64
