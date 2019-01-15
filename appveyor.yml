@@ -69,8 +69,7 @@ build_script:
   # Again, you only need build.cmd if you're building C extensions for
   # 64-bit Python 3.3/3.4. And you need to use %PYTHON% to get the correct
   # interpreter
-
-- cd build
+  - cd build
   - vcpkg install asio
   - vcpkg install catch2
   - cmake -G"%CMAKE_GENERATOR%" -DBOOST_LIBRARYDIR=C:\Libraries\boost_1_67_0\lib -DCMAKE_TOOLCHAIN_FILE=C:\Tools\vcpkg\scripts\buildsystems\vcpkg.cmake ..
