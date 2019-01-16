@@ -70,5 +70,5 @@ jobs:
       maximumCpuCount: true
       configuration: 'Release'
 
-- script: python setup.py bdist_wheel
+  - script: python setup.py bdist_wheel
     displayName: 'Build python wheel'
