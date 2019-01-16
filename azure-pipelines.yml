@@ -1,0 +1,63 @@
+# .NET Desktop
+# Build and run tests for .NET Desktop or Windows classic desktop solutions.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
+
+trigger:
+- master
+
+jobs:
+
+- job: 'Test'
+  pool:
+    vmImage: 'VS2017-Win2016'
+  strategy:
+    matrix:
+      Python27:
+        python.version: '2.7'
+        python.arch: 'x86'
+        cmake.generator: 'Visual Studio 9 2008'
+      Python35:
+        python.version: '3.5'
+        python.arch: 'x86'
+        cmake.generator: 'Visual Studio 14 2015'
+      Python37:
+        python.version: '3.7'
+        python.arch: 'x86'
+        cmake.generator: 'Visual Studio 14 2015'
+      Python37-x64:
+        python.version: '3.7'
+        python.arch: 'x64'
+        cmake.generator: 'Visual Studio 14 2015 Win64'
+    maxParallel: 3
+
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+      architecture: '$(python.arch)'
+  
+  - script: git submodule update --init --recursive
+    displayName: 'Init Submodule'
+
+  - script: .\vcpkg\bootstrap-vcpkg.bat
+    displayName: Bootstrap vcpkg
+
+  - script: .\vcpkg\vcpkg.exe install asio catch2 boost-system boost-date-time boost-regex
+    displayName: vcpkg install dependencies
+
+  - script: python -m pip install --upgrade pip setuptools wheel
+    displayName: 'Install python deps'
+
+  - script: choco install swig --yes --limit-output
+    displayName: 'Install swig'
+
+  - script: choco install cmake --yes --limit-output
+    displayName: 'Install cmake'
+
+  - task: CMake@1
+    inputs:
+      cmakeArgs: -G'$(cmake.generator)
+
+  - script: python setup.py bdist_wheel
+    displayName: 'Build python wheel'
