@@ -40,10 +40,15 @@ jobs:
   - script: git submodule update --init --recursive
     displayName: 'Init Submodule'
 
-  - script: .\vcpkg\bootstrap-vcpkg.bat
+  - script: |
+      git clone https://github.com/Microsoft/vcpkg.git
+      
     displayName: Bootstrap vcpkg
 
-  - script: .\vcpkg\vcpkg.exe install asio catch2 boost-system boost-date-time boost-regex
+  - script: |
+      git clone https://github.com/Microsoft/vcpkg.git
+      .\vcpkg\bootstrap-vcpkg.bat
+      .\vcpkg\vcpkg.exe install asio catch2 boost-system boost-date-time boost-regex
     displayName: vcpkg install dependencies
 
   - script: python -m pip install --upgrade pip setuptools wheel
@@ -57,7 +62,13 @@ jobs:
 
   - task: CMake@1
     inputs:
-      cmakeArgs: -G'$(cmake.generator)
+      cmakeArgs: -G'$(cmake.generator) -DCMAKE_TOOLCHAIN_FILE=$(Build.SourcesDirectory)\vcpkg\scripts\buildsystems\vcpkg.cmake
 
-  - script: python setup.py bdist_wheel
+  - task: MSBuild@1
+    inputs:
+      solution: 'build/ALL_BUILD.vcxproj'
+      maximumCpuCount: true
+      configuration: 'Release'
+
+- script: python setup.py bdist_wheel
     displayName: 'Build python wheel'
