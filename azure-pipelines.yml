@@ -49,8 +49,8 @@ jobs:
   - script: python -m pip install --upgrade pip setuptools wheel
     displayName: 'Install python deps'
 
-  - script: choco install cmake swig --yes --limit-output
-    displayName: 'Install cmake & swig'
+  - script: choco install swig --yes --limit-output
+    displayName: 'Install swig'
 
   #- script: choco install cmake --yes --limit-output
   #  displayName: 'Install cmake'
