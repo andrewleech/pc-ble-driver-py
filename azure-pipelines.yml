@@ -13,10 +13,10 @@ jobs:
     vmImage: 'VS2017-Win2016'
   strategy:
     matrix:
-      Python27:
-        python.version: '2.7'
-        python.arch: 'x86'
-        cmake.generator: 'Visual Studio 9 2008'
+      #Python27:
+      #  python.version: '2.7'
+      #  python.arch: 'x86'
+      #  cmake.generator: 'Visual Studio 9 2008'
       Python35:
         python.version: '3.5'
         python.arch: 'x86'
@@ -41,6 +41,7 @@ jobs:
     displayName: 'Init Submodule'
 
   - script: |
+      set VCPKG_TARGET_ARCHITECTURE=$(python.arch)
       git clone https://github.com/Microsoft/vcpkg.git
       .\vcpkg\bootstrap-vcpkg.bat
       .\vcpkg\vcpkg.exe install asio catch2 boost-system boost-date-time boost-regex
