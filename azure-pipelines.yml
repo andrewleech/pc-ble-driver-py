@@ -44,8 +44,13 @@ jobs:
       set VCPKG_TARGET_ARCHITECTURE=$(python.arch)
       git clone https://github.com/Microsoft/vcpkg.git
       .\vcpkg\bootstrap-vcpkg.bat
+    displayName: vcpkg install
+
+  - script: |
+      set VCPKG_TARGET_ARCHITECTURE=$(python.arch)
       .\vcpkg\vcpkg.exe install asio catch2 boost-system boost-date-time boost-regex
     displayName: vcpkg install dependencies
+
 
   - script: python -m pip install --upgrade pip setuptools wheel
     displayName: 'Install python deps'
